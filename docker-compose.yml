@@ -1,0 +1,22 @@
+# Header Forensics — hardened compose deployment
+#   docker compose up -d       → http://localhost:8080
+services:
+  header-forensics:
+    build: .
+    # Or run the prebuilt image from GitHub Container Registry instead:
+    # image: ghcr.io/theatifquamar/email-header-analyzer:latest
+    container_name: header-forensics
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+    # ---- container hardening ----
+    read_only: true                 # immutable root filesystem
+    tmpfs:                          # nginx needs scratch space only
+      - /tmp:size=16m
+    cap_drop:
+      - ALL                         # unprivileged nginx needs no capabilities
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 128m
+    pids_limit: 64
