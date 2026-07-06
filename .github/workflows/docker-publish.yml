@@ -1,5 +1,5 @@
 # Builds the image on every push to main / version tag and publishes it to
-# GitHub Container Registry, so anyone can:  docker pull ghcr.io/<you>/header-forensics
+# GitHub Container Registry: docker pull ghcr.io/theatifquamar/email-header-analyzer
 name: Publish container image
 
 on:
@@ -17,7 +17,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: docker/setup-buildx-action@v3
+      # Required for building the arm64 variant on amd64 runners
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -35,7 +40,7 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
             type=semver,pattern={{version}}
 
-      - name: Build and push (multi-arch: amd64 + arm64)
+      - name: Build and push (multi-arch amd64 + arm64)
         uses: docker/build-push-action@v6
         with:
           context: .
