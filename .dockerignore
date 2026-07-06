@@ -1,0 +1,7 @@
+node_modules
+dist
+docs
+*.zip
+.git
+.github
+README.md
