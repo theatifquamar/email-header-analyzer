@@ -1,4 +1,4 @@
-# Header Forensics — hardened compose deployment
+# Email Header Forensics — hardened compose deployment
 #   docker compose up -d       → http://localhost:8080
 services:
   header-forensics:

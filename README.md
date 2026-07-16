@@ -1,4 +1,4 @@
-# Header Forensics — Docker Edition
+# Email Header Forensics — Docker Edition
 
 Privacy-first email header analysis for SOC analysts. SPF/DKIM/DMARC +
 alignment, Received-chain reconstruction, FCrDNS/ASN enrichment, timestamp

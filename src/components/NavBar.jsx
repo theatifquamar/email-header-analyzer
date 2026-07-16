@@ -49,7 +49,7 @@ export function NavBar({ page, setPage }) {
           ▮
         </span>
         <div style={{ fontFamily: T.disp, fontWeight: 700, fontSize: 16.5, letterSpacing: 0.2, color: T.ink }}>
-          HEADER FORENSICS
+          EMAIL HEADER FORENSICS
         </div>
       </div>
 

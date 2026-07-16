@@ -1,5 +1,5 @@
 /* ============================================================
-   Header Forensics — analysis engine (pure logic, no UI).
+   Email Header Forensics — analysis engine (pure logic, no UI).
    Every function here runs entirely in the browser. Nothing in
    this file writes to disk, localStorage, or any network target
    other than the optional DNS-over-HTTPS calls in the DoH section,

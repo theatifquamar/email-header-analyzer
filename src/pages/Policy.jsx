@@ -12,11 +12,11 @@ export function PolicyPage() {
     <PageShell
       eyebrow="LEGAL"
       title="Legal & Acceptable Use Policy"
-      subtitle="Please read this page before relying on Header Forensics for an investigation. It explains what the tool is for, what it cannot promise, and where responsibility sits."
+      subtitle="Please read this page before relying on Email Header Forensics for an investigation. It explains what the tool is for, what it cannot promise, and where responsibility sits."
     >
       <Section title="1. Purpose & intended use" icon="🎯">
         <p style={p}>
-          Header Forensics is a defensive security utility built to help SOC analysts, incident
+          Email Header Forensics is a defensive security utility built to help SOC analysts, incident
           responders, IT administrators, and security researchers triage email headers during
           phishing investigations and routine email security review. It is intended to be used:
         </p>
@@ -34,9 +34,9 @@ export function PolicyPage() {
         </p>
       </Section>
 
-      <Section title="2. No warranty — provided \u201cas is\u201d" icon="⚠️">
+      <Section title="2. No warranty — provided “as is”" icon="⚠️">
         <p style={p}>
-          Header Forensics is provided <strong style={strong}>“as is” and “as available,” without warranty of
+          Email Header Forensics is provided <strong style={strong}>“as is” and “as available,” without warranty of
           any kind</strong>, express or implied, including but not limited to warranties of
           merchantability, fitness for a particular purpose, accuracy, completeness, non-infringement,
           or that the tool will be uninterrupted, secure, or error-free. The developer makes no

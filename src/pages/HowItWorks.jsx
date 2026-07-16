@@ -129,7 +129,7 @@ export function HowItWorksPage() {
           SPF, and DMARC records for the sender's domain.
         </p>
         <p style={{ margin: 0 }}>
-          This step is optional and off-switchable specifically because it is the one place data
+          This step is <strong style={{ color: T.ink }}>off by default</strong> and opt-in specifically because it is the one place data
           leaves the browser at all (as IPs/domains only, to public resolvers, never message
           content). If disabled or unreachable, the engine degrades gracefully — it uses only
           header-recorded evidence and explicitly lists the missing checks as uncertainties rather

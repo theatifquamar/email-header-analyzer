@@ -15,7 +15,7 @@ export function AnalyzerPage() {
   const [answers, setAnswers] = useState({});
   const [dns, setDns] = useState({});
   const [dnsLive, setDnsLive] = useState(null);
-  const [useDns, setUseDns] = useState(true);
+  const [useDns, setUseDns] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const analyze = useCallback(async () => {
@@ -168,8 +168,9 @@ export function AnalyzerPage() {
           <label style={{ display: "flex", gap: 9, alignItems: "flex-start", margin: "12px 0", fontSize: 12.5, color: T.dim, cursor: "pointer" }}>
             <input type="checkbox" checked={useDns} onChange={(e) => setUseDns(e.target.checked)} style={{ marginTop: 2, accentColor: T.accent }} />
             <span>
-              Live DNS enrichment (PTR, FCrDNS, ASN, MX, SPF, DMARC) via DNS-over-HTTPS. Sends only IPs and
-              domain names to the resolver — never message content. Uncheck for fully offline analysis.
+              <strong style={{ color: T.ink }}>Off by default (privacy-first).</strong> Enable live DNS
+              enrichment (PTR, FCrDNS, ASN, MX, SPF, DMARC) via DNS-over-HTTPS. Sends only IPs and domain
+              names to the resolver — never message content. Leave unchecked for fully offline analysis.
             </span>
           </label>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -269,7 +270,7 @@ export function AnalyzerPage() {
           <>
             {/* print-only masthead: browser print omits page chrome, so restate identity here */}
             <div className="print-header" style={{ display: "none", marginBottom: 18 }}>
-              <div style={{ fontFamily: T.disp, fontWeight: 700, fontSize: 20 }}>HEADER FORENSICS — Email Header Analysis Report</div>
+              <div style={{ fontFamily: T.disp, fontWeight: 700, fontSize: 20 }}>EMAIL HEADER FORENSICS — Analysis Report</div>
               <div style={{ fontFamily: T.mono, fontSize: 11, color: T.dim, marginTop: 4 }}>
                 Generated {new Date().toISOString()} · analyzed entirely in-browser, nothing retained · by Atif Quamar
               </div>

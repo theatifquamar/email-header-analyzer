@@ -8,7 +8,7 @@ import { GlossaryPage } from "./pages/Glossary.jsx";
 import { PolicyPage } from "./pages/Policy.jsx";
 
 /* ============================================================
-   HEADER FORENSICS — privacy-first email header analysis for SOC analysts
+   EMAIL HEADER FORENSICS — privacy-first email header analysis for SOC analysts
    All processing happens in browser memory. No storage APIs are used,
    nothing is logged, persisted, or transmitted except optional
    DNS-over-HTTPS lookups (hostnames/IPs only) that the analyst enables.
@@ -91,7 +91,7 @@ export default function App() {
         addresses and domain names to the public resolver you can disable above. Closing or reloading the
         page destroys all data, including the in-memory DNS cache.
         <div style={{ marginTop: 8, color: T.faint }}>
-          Header Forensics · Created by{" "}
+          Email Header Forensics · Created by{" "}
           <a href="https://www.linkedin.com/in/theatifquamar/" target="_blank" rel="noreferrer" style={{ color: T.faint, textDecoration: "underline" }}>
             Atif Quamar
           </a>{" "}

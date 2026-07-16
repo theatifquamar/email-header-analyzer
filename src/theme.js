@@ -1,5 +1,5 @@
 /* ============================================================
-   Design tokens — Header Forensics premium theme
+   Design tokens — Email Header Forensics premium theme
    ============================================================ */
 export const T = {
   // Surface palette — deep navy/slate, not pure black, for a premium SaaS feel

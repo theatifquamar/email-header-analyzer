@@ -1,5 +1,5 @@
 # ============================================================
-# Header Forensics — platform-independent container image
+# Email Header Forensics — platform-independent container image
 #
 # Stage 1 builds the static bundle; Stage 2 serves it with an
 # UNPRIVILEGED nginx (runs as non-root, listens on 8080).

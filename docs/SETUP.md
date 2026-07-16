@@ -1,4 +1,4 @@
-# Header Forensics — Setup Guide (Docker / platform-independent version)
+# Email Email Header Forensics — Setup Guide (Docker / platform-independent version)
 
 This guide takes you from nothing to a running instance on any machine that
 can run containers: Docker Desktop on Windows or macOS, Docker Engine or

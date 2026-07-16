@@ -13,7 +13,7 @@ export function buildMarkdown(res, answers, dns) {
   const neg = res.evidence.filter((e) => e.pol === "neg");
   const notes = res.evidence.filter((e) => e.pol === "note");
   const lines = [];
-  lines.push(`# Email Header Analysis Report`, ``, `**Generated:** ${new Date().toISOString()} · Header Forensics (in-memory analysis, no data retained)`, ``);
+  lines.push(`# Email Header Analysis Report`, ``, `**Generated:** ${new Date().toISOString()} · Email Header Forensics (in-memory analysis, no data retained)`, ``);
   lines.push(`## Executive summary`, ``, `**Verdict: ${verdict}** — confidence score **${score}/100**.`, ``);
   lines.push(res.summary, ``);
   lines.push(`## Message identity`, ``, `| Field | Value |`, `|---|---|`,

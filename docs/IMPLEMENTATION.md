@@ -1,4 +1,4 @@
-# Header Forensics — Implementation Explanation: Docker (Platform-Independent) Version
+# Email Email Header Forensics — Implementation Explanation: Docker (Platform-Independent) Version
 
 ## 1. Why this version exists
 
