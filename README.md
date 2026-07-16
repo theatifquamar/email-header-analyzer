@@ -44,3 +44,14 @@ keeps **no access logs**. See `docs/IMPLEMENTATION.md` for the full
 architecture and threat model, `docs/SETUP.md` for setup, TLS/HSTS,
 air-gapped use, and troubleshooting, and `docs/architecture.png` for the
 architecture diagram.
+
+## What's new
+
+- **Credits banner** crediting Atif Quamar (linkedin.com/in/theatifquamar), shown on every page.
+- **How It Works** — methodology page with a 9-stage pipeline diagram and scoring-weight rationale.
+- **Glossary** — searchable reference for every email-security term the tool uses.
+- **Policy** — acceptable use, "as is" warranty disclaimer, liability limitation, privacy statement.
+- **Premium visual refresh** — refined palette, gradients, shadows, consistent iconography.
+- **PDF export fix** — the exported report now matches the on-screen dark theme and colors exactly
+  (root cause: browsers strip background colors when printing unless told not to), and every
+  section is included in the export even if left collapsed on screen.
