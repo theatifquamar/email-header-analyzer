@@ -1,5 +1,16 @@
 # Builds the image on every push to main / version tag and publishes it to
-# GitHub Container Registry: docker pull ghcr.io/theatifquamar/email-header-analyzer
+# GitHub Container Registry, so anyone can:  docker pull ghcr.io/<you>/header-forensics
+#
+# Trust chain for a security tool auditing other people's security tools:
+#   1. Tests must pass before anything is built.
+#   2. The image is signed keylessly via Sigstore/cosign, tied to this exact
+#      workflow run via GitHub's OIDC token — no private key to leak or
+#      rotate. Anyone can verify the image came from this repo's CI, not
+#      from a tampered push, using the `cosign verify` command documented
+#      in docs/SETUP.md.
+#   3. An SBOM (Software Bill of Materials) and build provenance are
+#      attached to the image as attestations, so consumers can inspect
+#      exactly what's inside without trusting a README's word for it.
 name: Publish container image
 
 on:
@@ -10,10 +21,24 @@ on:
 permissions:
   contents: read
   packages: write
+  id-token: write   # required for keyless Sigstore/cosign signing
 
 jobs:
-  build-and-push:
+  test:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci
+      - run: npm test
+
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
     steps:
       - uses: actions/checkout@v4
 
@@ -40,7 +65,8 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
             type=semver,pattern={{version}}
 
-      - name: Build and push (multi-arch amd64 + arm64)
+      - name: Build and push (multi-arch amd64 + arm64, with SBOM + provenance)
+        id: push
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -48,3 +74,31 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          sbom: true
+          provenance: true
+
+  sign:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      id-token: write
+    steps:
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Keyless signing: cosign requests a short-lived certificate from
+      # Sigstore's Fulcio CA, proven by this workflow's OIDC identity, and
+      # records the signature in the public Rekor transparency log. No
+      # signing key is stored or managed by this repo.
+      - name: Sign the published image (keyless, via Sigstore)
+        run: |
+          cosign sign --yes \
+            ghcr.io/${{ github.repository }}@${{ needs.build-and-push.outputs.digest }}
