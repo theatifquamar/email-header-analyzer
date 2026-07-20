@@ -2,10 +2,10 @@ import React, { useState, useMemo, useCallback } from "react";
 import { T, VERDICT_COLOR, polColor } from "../theme.js";
 import {
   parseHeaders, analyzeStatic, scoreEvidence, isPrivateIP, orgDomain,
-  ptrLookup, fcrdns, asnLookup, doh, dnsCache, QUESTIONS,
+  ptrLookup, fcrdns, asnLookup, doh, domainAgeInfo, dnsCache, QUESTIONS,
   SAMPLE_LEGIT, SAMPLE_SUS,
 } from "../engine.js";
-import { buildMarkdown, recommendedActions, buildSummary } from "../report.js";
+import { buildMarkdown, buildJson, recommendedActions, buildSummary } from "../report.js";
 import { Collapsible, EvidenceRow, Tag } from "../components/Primitives.jsx";
 import { HopRail } from "../components/HopRail.jsx";
 
@@ -52,6 +52,8 @@ export function AnalyzerPage() {
           dmarc: (dmarcTxt || []).find((t) => /^v=DMARC1/i.test(t)) || null,
           available: mx !== null,
         };
+        const age = await domainAgeInfo(orgDomain(base.meta.fromDom));
+        if (age) { dnsMap.__domainAge = age; live = true; }
       }
     }
 
@@ -76,6 +78,25 @@ export function AnalyzerPage() {
           ev.push({ pol: "pos", w: p && /reject|quarantine/i.test(p) ? 3 : 1, label: `Sender publishes DMARC (p=${p || "none"})`, detail: p && /reject|quarantine/i.test(p) ? "Enforcing policy — spoofing this domain should be blocked by compliant receivers, which strengthens a DMARC pass and sharpens a fail." : "Monitoring-only policy; spoofed mail is not blocked by receivers.", cat: "dns" });
         } else ev.push({ pol: "note", w: -2, label: "Sender publishes no DMARC record", detail: `_dmarc.${orgDomain(base.meta.fromDom)} not found — the domain is easier to spoof and alignment can't be enforced.`, cat: "dns" });
         if (!dd.spf) ev.push({ pol: "note", w: -2, label: "No SPF record published (live lookup)", detail: `${base.meta.fromDom} publishes no v=spf1 record.`, cat: "dns" });
+      }
+      if (base.meta.fromDom) {
+        const age = dnsMap.__domainAge;
+        if (age) {
+          const yrs = (age.ageDays / 365).toFixed(1);
+          if (age.ageDays < 7) {
+            ev.push({ pol: "neg", w: 14, label: "Sender domain registered within the last week", detail: `${base.meta.fromDom} was registered ${age.ageDays} day${age.ageDays === 1 ? "" : "s"} ago${age.registrar ? ` via ${age.registrar}` : ""}. Brand-new domains sending mail — especially urgent or payment-related mail — are one of the strongest phishing signals available.`, cat: "dns" });
+          } else if (age.ageDays < 30) {
+            ev.push({ pol: "neg", w: 9, label: "Sender domain registered within the last month", detail: `${base.meta.fromDom} was registered ${age.ageDays} days ago. Legitimate correspondence from a brand-new domain is uncommon; verify independently.`, cat: "dns" });
+          } else if (age.ageDays < 90) {
+            ev.push({ pol: "neg", w: 4, label: "Sender domain registered within the last 3 months", detail: `${base.meta.fromDom} is ${age.ageDays} days old. Mildly elevated risk — many legitimate new businesses fall in this range too.`, cat: "dns" });
+          } else if (age.ageDays > 365) {
+            ev.push({ pol: "pos", w: 3, label: "Sender domain has an established registration history", detail: `${base.meta.fromDom} was registered ${yrs} years ago (${age.created.toISOString().slice(0, 10)}). Long-standing domains are less commonly used for disposable phishing infrastructure.`, cat: "dns" });
+          } else {
+            ev.push({ pol: "note", w: 0, label: "Sender domain registration age is unremarkable", detail: `${base.meta.fromDom} is ${age.ageDays} days old — neither newly registered nor long-established.`, cat: "dns" });
+          }
+        } else {
+          ev.push({ pol: "note", w: 0, label: "Domain age unavailable", detail: `No RDAP registration data found for ${base.meta.fromDom} — either the registry doesn't yet support RDAP for this TLD, or the lookup was blocked. Not treated as a negative signal.`, cat: "dns" });
+        }
       }
     }
 
@@ -114,6 +135,16 @@ export function AnalyzerPage() {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `header-analysis-${Date.now()}.md`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+
+  const exportJson = () => {
+    const data = buildJson(merged, answers, dns);
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `header-analysis-${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
   };
@@ -313,6 +344,7 @@ export function AnalyzerPage() {
                 </div>
                 <div className="no-print" style={{ display: "flex", gap: 8 }}>
                   <button onClick={exportMd} style={{ background: T.panel2, color: T.ink, border: `1px solid ${T.line}`, borderRadius: T.r2, padding: "10px 15px", fontSize: 12.5, cursor: "pointer", fontFamily: T.mono, fontWeight: 600 }}>↓ Markdown</button>
+                  <button onClick={exportJson} style={{ background: T.panel2, color: T.ink, border: `1px solid ${T.line}`, borderRadius: T.r2, padding: "10px 15px", fontSize: 12.5, cursor: "pointer", fontFamily: T.mono, fontWeight: 600 }}>↓ JSON</button>
                   <button onClick={() => window.print()} style={{ background: T.panel2, color: T.ink, border: `1px solid ${T.line}`, borderRadius: T.r2, padding: "10px 15px", fontSize: 12.5, cursor: "pointer", fontFamily: T.mono, fontWeight: 600 }}>↓ PDF</button>
                 </div>
               </div>

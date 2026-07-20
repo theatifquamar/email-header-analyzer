@@ -102,11 +102,19 @@ export function PolicyPage() {
             FCrDNS, ASN, MX, SPF, and DMARC lookups. Message content and analysis results are
             never included in these queries.
           </li>
+          <li style={li}>
+            The sender's domain name only, sent to public RDAP registration-data services
+            (rdap.verisign.com for .com/.net, rdap.org for other TLDs) to determine domain
+            registration age — a newly registered domain is one of the strongest phishing
+            signals available. Message content is never included in these queries, and if a
+            registry doesn't support RDAP for a given TLD, the check is simply marked
+            unavailable rather than treated as suspicious.
+          </li>
         </ul>
         <p style={p}>
           You can disable this feature at any time in the interface for fully offline analysis.
           A Content-Security-Policy enforced by your browser restricts this application's network
-          access to only those two resolvers — no other destination is technically reachable
+          access to only those named resolvers — no other destination is technically reachable
           from within the page.
         </p>
         <p style={p}>

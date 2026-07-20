@@ -128,6 +128,15 @@ export function HowItWorksPage() {
           to the IP (FCrDNS), ASN/organization/country via Team Cymru's DNS-based lookup, and MX,
           SPF, and DMARC records for the sender's domain.
         </p>
+        <p style={{ margin: "0 0 10px" }}>
+          It also checks the sender domain's <strong style={{ color: T.ink }}>registration age via
+          RDAP</strong> (the modern, structured successor to WHOIS). A domain registered days or
+          weeks ago sending "urgent" or payment-related mail is one of the strongest phishing
+          signals that exists, so this is folded into the weighted evidence engine as a
+          heavily-weighted finding — not just displayed as trivia. Coverage varies by TLD (not
+          every registry has adopted RDAP yet), so when no registration data is found, the check
+          is explicitly marked unavailable rather than treated as suspicious.
+        </p>
         <p style={{ margin: 0 }}>
           This step is <strong style={{ color: T.ink }}>off by default</strong> and opt-in specifically because it is the one place data
           leaves the browser at all (as IPs/domains only, to public resolvers, never message
@@ -149,6 +158,7 @@ export function HowItWorksPage() {
         <WeightRow label="DKIM / DMARC pass" weight="+12 to +14" why="Cryptographic and policy-level proof the visible sender authorized this exact message." />
         <WeightRow label="Residential/dynamic-IP-style origin" weight="−8" why="Real mail servers almost never sit on consumer ISP address space; this pattern dominates botnet-relayed phishing." />
         <WeightRow label="Missing Message-ID" weight="−6" why="Nearly universal in legitimate MTAs; absence suggests a crude or scripted sending tool." />
+        <WeightRow label="Sender domain registered within the last week" weight="−14" why="One of the strongest phishing signals available — legitimate correspondence from a brand-new domain, especially urgent or payment-related mail, is rare." />
         <WeightRow label="Recognized ESP/gateway infrastructure on path" weight="+3 to +8" why="Matches documented, expected routing behavior for that provider rather than ad hoc forwarding." />
         <p style={{ margin: "14px 0 0" }}>
           Weights were set by how strongly each signal discriminates between legitimate and
@@ -190,8 +200,9 @@ export function HowItWorksPage() {
           The final view assembles a plain-language executive summary, the full positive/negative/
           uncertainty evidence lists, the scoring ledger showing the arithmetic from baseline to
           final score, the chain-of-custody hop map, and a recommended-action list tailored to the
-          verdict band. All of it exports as Markdown or a print-optimized PDF that mirrors the
-          on-screen report.
+          verdict band. It exports as Markdown, a print-optimized PDF that mirrors the on-screen
+          report, or a structured JSON document — the same evidence in a stable, machine-readable
+          schema for wiring into a SIEM/SOAR playbook, a chat-ops bot, or ticketing automation.
         </p>
       </Section>
     </PageShell>

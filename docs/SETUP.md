@@ -132,13 +132,38 @@ Because assets are content-hashed and `index.html` is served with
 `Cache-Control: no-store`, users get the new version on their next page
 load with no cache-busting rituals.
 
-## 9. Troubleshooting
+## 9. Verifying release integrity (signature + SBOM)
+
+Every image published by this repo's CI is signed keylessly via
+[Sigstore/cosign](https://www.sigstore.dev/) and carries an attached SBOM
+and build-provenance attestation. To verify an image actually came from
+this repository's GitHub Actions workflow (not a tampered push):
+
+```bash
+# Install cosign: https://docs.sigstore.dev/system_config/installation/
+cosign verify \
+  --certificate-identity-regexp "^https://github.com/theatifquamar/email-header-analyzer" \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+  ghcr.io/theatifquamar/email-header-analyzer:latest
+```
+
+A successful verification prints the signing certificate's identity
+(matching this repo's workflow) and its entry in the public Rekor
+transparency log.
+
+To inspect what's actually inside the image (the SBOM):
+
+```bash
+docker buildx imagetools inspect ghcr.io/theatifquamar/email-header-analyzer:latest --format '{{ json .SBOM }}'
+```
+
+## 10. Troubleshooting
 
 **"port is already allocated"** — something else owns 8080. Map another
 host port: `docker run -p 9090:8080 …` and browse to `:9090`.
 
 **Page loads but DNS enrichment shows "unreachable"** — your network (not
-the container) is blocking DNS-over-HTTPS to dns.google/cloudflare-dns.com;
+the container) is blocking DNS-over-HTTPS to dns.google/cloudflare-dns.com/rdap.org/rdap.verisign.com;
 common on corporate networks. The app degrades to header-only analysis by
 design. Untick the option to silence the notice.
 
@@ -155,7 +180,7 @@ binds only 8080.
 the healthcheck simply fetches `/` every 30 s, so failures almost always
 mean nginx couldn't start due to a mangled `docker/nginx.conf` edit.
 
-## 10. What this container never does
+## 11. What this container never does
 
 No analysis data ever reaches the container: the app runs in the visitor's
 browser and has no code path to send headers, results, or answers to the

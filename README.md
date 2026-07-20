@@ -1,5 +1,10 @@
 # Email Header Forensics — Docker Edition
 
+[![Publish container image](https://github.com/theatifquamar/email-header-analyzer/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/theatifquamar/email-header-analyzer/actions/workflows/docker-publish.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Container: GHCR](https://img.shields.io/badge/container-ghcr.io-blue?logo=docker)](https://github.com/theatifquamar/email-header-analyzer/pkgs/container/email-header-analyzer)
+[![Signed with cosign](https://img.shields.io/badge/signed-cosign%2FSigstore-6c47ff)](./SECURITY.md#verifying-release-integrity)
+
 Privacy-first email header analysis for SOC analysts. SPF/DKIM/DMARC +
 alignment, Received-chain reconstruction, FCrDNS/ASN enrichment, timestamp
 forensics, ESP/gateway recognition, evidence-weighted verdicts, and

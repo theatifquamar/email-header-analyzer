@@ -219,6 +219,55 @@ export async function asnLookup(ip) {
   return { asn, prefix: parts[1], country: parts[2], org };
 }
 
+/**
+ * Domain age via RDAP (the modern WHOIS successor — JSON over HTTPS, same
+ * privacy model as the DoH calls above: only the domain name is sent, never
+ * message content). A domain registered days before sending "urgent" mail
+ * is one of the strongest phishing signals that exists, so this is folded
+ * into the weighted evidence engine, not just displayed as trivia.
+ *
+ * .com/.net query Verisign's RDAP server directly (no redirect — the most
+ * common TLDs in business email, and CSP-friendly since there's exactly one
+ * hop to one allow-listed host). Every other TLD falls back to the public
+ * RDAP.org bootstrap redirector, which 302s to whichever registry is
+ * authoritative; that hop may or may not be reachable under a strict CSP or
+ * may 404 for TLDs that don't yet support RDAP, so failure here is treated
+ * as "unavailable," never as a negative finding — same graceful-degradation
+ * philosophy as the rest of the enrichment features.
+ */
+export async function domainAgeInfo(domain) {
+  if (!domain) return null;
+  const tld = domain.split(".").pop().toLowerCase();
+  const urls = [];
+  if (tld === "com" || tld === "net") {
+    urls.push(`https://rdap.verisign.com/${tld}/v1/domain/${encodeURIComponent(domain)}`);
+  }
+  urls.push(`https://rdap.org/domain/${encodeURIComponent(domain)}`);
+
+  for (const url of urls) {
+    try {
+      const ctl = new AbortController();
+      const t = setTimeout(() => ctl.abort(), 5000);
+      const res = await fetch(url, { headers: { accept: "application/rdap+json" }, signal: ctl.signal, redirect: "follow" });
+      clearTimeout(t);
+      if (!res.ok) continue;
+      const j = await res.json();
+      const events = j.events || [];
+      const reg = events.find((e) => e.eventAction === "registration");
+      if (!reg?.eventDate) continue;
+      const created = new Date(reg.eventDate);
+      if (isNaN(created)) continue;
+      const ageDays = Math.floor((Date.now() - created.getTime()) / 86400000);
+      const registrarEnt = (j.entities || []).find((e) => (e.roles || []).includes("registrar"));
+      const registrar = registrarEnt?.vcardArray?.[1]?.find((x) => x[0] === "fn")?.[3] || null;
+      return { created, ageDays, registrar, source: url };
+    } catch {
+      continue; // try the next candidate, or exhaust and return null below
+    }
+  }
+  return null; // no RDAP coverage for this TLD, or unreachable — treated as unknown, not negative
+}
+
 /* ---------------- Analysis engine ---------------- */
 export function analyzeStatic(h) {
   const ev = []; // {id, pol:'pos'|'neg'|'note', w, label, detail, cat}

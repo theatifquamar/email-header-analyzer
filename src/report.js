@@ -39,6 +39,71 @@ export function buildMarkdown(res, answers, dns) {
   return lines.join("\n");
 }
 
+/**
+ * Machine-readable export — same underlying evidence as the Markdown/PDF
+ * reports, structured for programmatic consumption (SIEM/SOAR playbooks,
+ * chat-ops bots, ticketing auto-fill). Schema is intentionally flat and
+ * stable: additive changes only in future versions, tracked via `schema`.
+ */
+export function buildJson(res, answers, dns) {
+  const { score, verdict } = res.scored;
+  return {
+    schema: "header-forensics.report/v1",
+    generatedAt: new Date().toISOString(),
+    tool: { name: "Email Header Forensics", note: "In-memory analysis only — nothing retained by the tool itself." },
+    verdict,
+    confidenceScore: score,
+    scoreCapNote: "Score is clamped to 2–98; header evidence alone cannot support absolute certainty.",
+    summary: res.summary,
+    identity: {
+      from: res.meta.fromRaw || null,
+      returnPath: res.meta.returnPath || null,
+      replyTo: res.meta.replyTo || null,
+      subject: res.meta.subject || null,
+      messageId: res.meta.messageId || null,
+      date: res.meta.dateHdr || null,
+    },
+    authentication: {
+      spf: res.auth.spf?.result || res.rspf?.result || null,
+      dkim: res.auth.dkim[0]?.result || (res.meta.dkimSigs.length ? "unverified" : null),
+      dmarc: res.auth.dmarc?.result || null,
+      dmarcPolicy: res.auth.dmarc?.policy || null,
+      compauth: res.auth.compauth?.result || null,
+      arc: res.auth.arc || null,
+    },
+    hops: res.hops.map((h, i) => ({
+      index: i + 1,
+      isOrigin: !!h.isOrigin,
+      fromHost: h.fromHost || null,
+      fromIP: h.fromIP || null,
+      fromRdnsHeader: h.fromRdns || null,
+      byHost: h.byHost || null,
+      tls: !!h.tls,
+      timestamp: h.date ? h.date.toISOString() : null,
+      deltaSeconds: h.delta ?? null,
+      provider: h.provider?.name || null,
+      liveDns: dns[h.fromIP]
+        ? {
+            ptr: Array.isArray(dns[h.fromIP].ptr) ? dns[h.fromIP].ptr : null,
+            fcrdnsConfirmed: dns[h.fromIP].fcrdns?.confirmed ?? null,
+            asn: dns[h.fromIP].asn?.asn ?? null,
+            asnOrg: dns[h.fromIP].asn?.org ?? null,
+            asnCountry: dns[h.fromIP].asn?.country ?? null,
+          }
+        : null,
+    })),
+    evidence: res.evidence.map((e) => ({ polarity: e.pol, weight: e.w, label: e.label, detail: e.detail, category: e.cat || null })),
+    analystContext: Object.fromEntries(QUESTIONS.map((q) => [q.id, answers[q.id] || null])),
+    recommendedActions: res.actions,
+    liveDnsEnrichment: !!res.dnsLive,
+    limitations: [
+      "DKIM cannot be cryptographically re-verified from headers alone; results reflect the receiving server's recorded Authentication-Results.",
+      "Received headers below the first trusted hop can be forged by the sender.",
+      "IP/hash/URL reputation is not queried automatically by this tool; only manual pivot links are provided.",
+    ],
+  };
+}
+
 export function recommendedActions(verdict, answers, res) {
   const a = [];
   if (verdict === "Malicious" || verdict === "Likely Malicious") {
