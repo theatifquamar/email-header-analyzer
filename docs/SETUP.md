@@ -137,10 +137,34 @@ load with no cache-busting rituals.
 Every image published by this repo's CI is signed keylessly via
 [Sigstore/cosign](https://www.sigstore.dev/) and carries an attached SBOM
 and build-provenance attestation. To verify an image actually came from
-this repository's GitHub Actions workflow (not a tampered push):
+this repository's GitHub Actions workflow (not a tampered push), you first
+need the `cosign` CLI installed locally.
+
+**Installing cosign** — you do **not** need Go installed; it's just the
+easiest path *if* you already have it (Go is the programming language
+cosign itself is written in, and `go install` compiles and installs a Go
+program directly from its source repository in one command — convenient
+only if Go is already on your machine). Most people don't have Go
+installed and shouldn't need to install it just for this. Pick whichever
+of these is easiest for you:
+
+- **No Go, no package manager (simplest for most people):** download a
+  prebuilt binary directly from
+  https://github.com/sigstore/cosign/releases — grab the file matching
+  your OS (e.g. `cosign-windows-amd64.exe` for Git Bash on Windows,
+  `cosign-darwin-arm64` for Apple Silicon Macs, `cosign-linux-amd64` for
+  Linux), rename it to `cosign` (or `cosign.exe` on Windows), and place it
+  somewhere on your `PATH`.
+- **macOS with Homebrew:** `brew install cosign`
+- **If you already have Go 1.20+:**
+  `go install github.com/sigstore/cosign/v3/cmd/cosign@latest`
+
+Full installation docs (with package-manager options for Linux distros
+too): https://docs.sigstore.dev/cosign/system_config/installation/
+
+**Verifying the image:**
 
 ```bash
-# Install cosign: https://docs.sigstore.dev/system_config/installation/
 cosign verify \
   --certificate-identity-regexp "^https://github.com/theatifquamar/email-header-analyzer" \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com \
@@ -150,6 +174,37 @@ cosign verify \
 A successful verification prints the signing certificate's identity
 (matching this repo's workflow) and its entry in the public Rekor
 transparency log.
+
+### A note on digest mismatches (multi-arch images)
+
+This image is built for **both amd64 and arm64** in one push, so the
+`:latest` tag isn't a single image — it's a *manifest list* (an index)
+pointing to two separate platform-specific images, each with its own
+SHA-256 digest. This is why the digest you see on GitHub's package page
+can look different from the digest `docker pull` reports in your
+terminal: `docker pull` automatically picks whichever platform matches
+your machine and reports *that* manifest's digest, while GitHub's UI may
+be showing the index digest or a different platform's entry. Neither is
+wrong — they're different (but equally legitimate) digests describing
+the same multi-arch release.
+
+To see the full picture and reconcile them yourself:
+
+```bash
+docker buildx imagetools inspect ghcr.io/theatifquamar/email-header-analyzer:latest
+```
+
+This prints the index digest at the top, followed by each platform's own
+digest underneath. The `cosign verify` command above targets the image by
+*tag*, which automatically resolves to the index digest — the same one
+`build-push-action` signed — so it works correctly as shown. If you ever
+want to pin verification to an explicit digest instead of a tag (cosign's
+own docs recommend this for production use, since a tag can be
+repointed), make sure you copy the **index digest** from the top of
+`imagetools inspect`'s output, not one of the per-platform digests below
+it — verifying against a per-platform digest will fail with "no matching
+signatures," not because signing is broken, but because that digest is
+different from the one that was actually signed.
 
 To inspect what's actually inside the image (the SBOM):
 
