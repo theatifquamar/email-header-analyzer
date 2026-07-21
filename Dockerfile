@@ -20,6 +20,7 @@ RUN npm ci --no-audit --no-fund
 
 # Build the static bundle
 COPY index.html vite.config.js ./
+COPY public ./public
 COPY src ./src
 RUN npm run build
 
