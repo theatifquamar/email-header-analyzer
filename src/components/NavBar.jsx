@@ -31,23 +31,13 @@ export function NavBar({ page, setPage }) {
         onClick={() => setPage("analyzer")}
         style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}
       >
-        <span
-          style={{
-            width: 30,
-            height: 30,
-            borderRadius: 8,
-            background: T.accentGrad,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 15,
-            fontWeight: 800,
-            color: "#0A0E1A",
-            boxShadow: T.shadowGlow,
-          }}
-        >
-          ▮
-        </span>
+        <img
+          src="/favicon.svg"
+          alt="Email Header Forensics logo"
+          width={34}
+          height={37}
+          style={{ display: "block", filter: `drop-shadow(0 0 10px ${T.accent}33)` }}
+        />
         <div style={{ fontFamily: T.disp, fontWeight: 700, fontSize: 16.5, letterSpacing: 0.2, color: T.ink }}>
           EMAIL HEADER FORENSICS
         </div>

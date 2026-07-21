@@ -1,0 +1,105 @@
+<svg viewBox="88 104 378 414" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="shieldEdge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="35%" stop-color="#a78bfa"/>
+      <stop offset="65%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="envFace" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5b4b9e"/>
+      <stop offset="100%" stop-color="#312a6b"/>
+    </linearGradient>
+    <linearGradient id="envFlap" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4c3f8a"/>
+      <stop offset="100%" stop-color="#2a2358"/>
+    </linearGradient>
+    <linearGradient id="paperGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3d3470"/>
+      <stop offset="100%" stop-color="#211c47"/>
+    </linearGradient>
+    <linearGradient id="lensGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#efe6ff"/>
+      <stop offset="100%" stop-color="#b7a3f5"/>
+    </linearGradient>
+    <linearGradient id="glassGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </linearGradient>
+    <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <g transform="translate(-37.5,-35.5)">
+    <g transform="translate(30,90) scale(0.56)">
+
+      <g stroke="#8b5cf6" stroke-linecap="round" opacity="0.55">
+        <line x1="230" y1="330" x2="330" y2="330" stroke-width="6"/>
+        <line x1="215" y1="350" x2="345" y2="350" stroke-width="6"/>
+        <line x1="240" y1="370" x2="320" y2="370" stroke-width="6"/>
+        <circle cx="205" cy="330" r="5" fill="#8b5cf6" stroke="none"/>
+        <circle cx="195" cy="370" r="5" fill="#8b5cf6" stroke="none"/>
+      </g>
+      <g stroke="#8b5cf6" stroke-linecap="round" opacity="0.35">
+        <line x1="250" y1="430" x2="335" y2="430" stroke-width="5"/>
+        <line x1="260" y1="450" x2="330" y2="450" stroke-width="5"/>
+      </g>
+
+      <g filter="url(#softShadow)">
+        <path d="M500 130 L700 205 L700 470 C700 620 610 730 500 785 C390 730 300 620 300 470 L300 205 Z"
+              fill="#160f28" stroke="url(#shieldEdge)" stroke-width="14" stroke-linejoin="round"/>
+        <path d="M500 165 L668 228 L668 468 C668 600 588 700 500 748 C412 700 332 600 332 468 L332 228 Z"
+              fill="none" stroke="#3a2f63" stroke-width="3" opacity="0.6"/>
+      </g>
+
+      <g transform="translate(360,290)">
+        <g transform="translate(70,-20)">
+          <rect x="0" y="0" width="230" height="200" rx="6" fill="url(#paperGrad)" stroke="#5b4fa0" stroke-width="2"/>
+          <g font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#d6d0f5">
+            <text x="14" y="26">From:</text>
+            <text x="14" y="50">To:</text>
+            <text x="14" y="74">Date:</text>
+            <text x="14" y="98">Subject:</text>
+            <text x="14" y="122">Received:</text>
+            <text x="14" y="146">Message-ID:</text>
+            <text x="14" y="166" font-size="13">DKIM:</text>
+            <text x="14" y="182" font-size="12" opacity="0.85">SPF:</text>
+            <text x="30" y="182" font-size="12" opacity="0.7">MARC:</text>
+          </g>
+          <g stroke="#8f86c9" stroke-width="2" opacity="0.7">
+            <line x1="62" y1="21" x2="216" y2="21"/>
+            <line x1="42" y1="45" x2="216" y2="45"/>
+            <line x1="50" y1="69" x2="216" y2="69"/>
+            <line x1="76" y1="93" x2="216" y2="93"/>
+            <line x1="90" y1="117" x2="216" y2="117"/>
+            <line x1="108" y1="141" x2="216" y2="141"/>
+          </g>
+          <text x="18" y="196" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#a89fd6" opacity="0.75">X-Originating-IP:</text>
+        </g>
+
+        <path d="M0 40 L280 40 L280 220 L0 220 Z" fill="url(#envFace)" stroke="#241d4d" stroke-width="3"/>
+        <path d="M0 40 L140 150 L280 40 Z" fill="url(#envFlap)" stroke="#241d4d" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M0 220 L140 130 L280 220 Z" fill="#251f52" opacity="0.55"/>
+      </g>
+
+      <g transform="translate(650,560)" filter="url(#softShadow)">
+        <circle cx="0" cy="0" r="98" fill="#1a1330" stroke="url(#lensGrad)" stroke-width="14"/>
+        <circle cx="0" cy="0" r="98" fill="none" stroke="url(#glassGrad)" stroke-width="4" opacity="0.7"/>
+        <g fill="none" stroke="#c9b8f7" stroke-linecap="round">
+          <path d="M-58 8 a58 46 0 1 1 116 0" stroke-width="5" opacity="0.95"/>
+          <path d="M-46 8 a46 38 0 1 1 92 0" stroke-width="5" opacity="0.85"/>
+          <path d="M-34 8 a34 30 0 1 1 68 0" stroke-width="5" opacity="0.7"/>
+          <path d="M-22 8 a22 20 0 1 1 44 0" stroke-width="5" opacity="0.55"/>
+          <path d="M-10 8 a10 10 0 1 1 20 0" stroke-width="5" opacity="0.4"/>
+        </g>
+        <line x1="70" y1="70" x2="150" y2="150" stroke="url(#glassGrad)" stroke-width="34" stroke-linecap="round"/>
+        <line x1="70" y1="70" x2="150" y2="150" stroke="#c9b8f7" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
+      </g>
+    </g>
+  </g>
+</svg>
